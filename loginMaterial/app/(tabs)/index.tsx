@@ -18,10 +18,10 @@ const LoginPage: React.FC = () => {
   const handleLogin = () => {
     console.log('Login attempted with:', username, password);
 
-    if (username && password) {
+    if (username == "pengguna" && password == "masuk") {
       router.push('/explore');
     } else {
-      alert('Please enter both username and password');
+      alert('Invalid, please double check your username and password');
     }
   };
 
