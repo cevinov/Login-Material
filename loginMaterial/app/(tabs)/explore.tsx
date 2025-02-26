@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useNavigation } from '@react-navigation/native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Image gallery data
@@ -11,28 +12,33 @@ const galleryItems = [
     title: 'Mountain Landscape',
     description: 'Beautiful mountain view with clear skies',
     tags: ['nature', 'mountains'],
+    imageUrl: 'https://i.imgur.com/KIDU3Dlb.jpg',
   },
   {
     id: 2,
     title: 'Ocean Sunset',
     description: 'Stunning sunset over calm ocean waters',
     tags: ['ocean', 'sunset'],
+    imageUrl: 'https://i.imgur.com/1gMQJb.jpg',
   },
   {
     id: 3,
     title: 'Forest Path',
     description: 'Serene walking path through a dense forest',
     tags: ['forest', 'path'],
+    imageUrl: 'https://i.imgur.com/4olOnb.jpg',
   },
   {
     id: 4,
     title: 'City Skyline',
     description: 'Urban skyline with modern architecture',
     tags: ['city', 'architecture'],
+    imageUrl: 'https://i.imgur.com/XukNxmFb.jpg',
   },
 ];
 
 const ImageGalleryPage: React.FC = () => {
+  const navigation = useNavigation();
   const [favorites, setFavorites] = useState<number[]>([]);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
@@ -42,6 +48,11 @@ const ImageGalleryPage: React.FC = () => {
   const primaryColor = useThemeColor({}, 'primary');
   const surfaceColor = useThemeColor({}, 'surface');
   const accentColor = useThemeColor({}, 'accent');
+
+  const handleLogout = () => {
+    // You might want to clear any user data or tokens here
+    navigation.navigate('index' as never);
+  };
   const handleFavoriteToggle = (id: number) => {
     if (favorites.includes(id)) {
       setFavorites(favorites.filter(itemId => itemId !== id));
@@ -63,17 +74,18 @@ const ImageGalleryPage: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <StatusBar style="auto" />
-      {/* App Bar */}
       <View style={[styles.appBar, { backgroundColor: primaryColor }]}>
-        <Text style={[styles.appBarTitle, { color: 'white' }]}>My Gallery</Text>
+        <Text style={[styles.appBarTitle, { color: 'black' }]}>My Gallery</Text>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header Section */}
         <View style={[styles.headerSection, { backgroundColor: surfaceColor }]}>
           <Text style={[styles.headerTitle, { color: textColor }]}>Explore Our Collection</Text>
           <Text style={[styles.headerDescription, { color: textColor }]}>
-            A curated selection of beautiful images following Material Design M3 principles.
+            A curated selection of beautiful images from imgur.
           </Text>
           <TouchableOpacity style={[styles.button, { backgroundColor: primaryColor }]}>
             <Text style={[styles.buttonText, { color: 'white' }]}>Browse All</Text>
@@ -84,17 +96,16 @@ const ImageGalleryPage: React.FC = () => {
         <View style={styles.galleryGrid}>
           {galleryItems.map((item) => (
             <View key={item.id} style={[styles.galleryItem, { backgroundColor: surfaceColor }]}>
-              {/* Image placeholder */}
-              <View style={styles.imagePlaceholder}>
-                <Text style={[styles.placeholderText, { color: textColor }]}>Image Placeholder</Text>
-              </View>
+              <Image
+                source={{ uri: item.imageUrl }}
+                style={styles.image}
+                resizeMode="cover"
+              />
 
-              {/* Content */}
               <View style={styles.itemContent}>
                 <Text style={[styles.itemTitle, { color: textColor }]}>{item.title}</Text>
                 <Text style={[styles.itemDescription, { color: textColor }]}>{item.description}</Text>
 
-                {/* Tags */}
                 <View style={styles.tagsContainer}>
                   {item.tags.map((tag) => (
                     <View key={tag} style={[styles.tag, { backgroundColor: primaryColor + '20' }]}>
@@ -135,7 +146,6 @@ const ImageGalleryPage: React.FC = () => {
         </View>
       </ScrollView>
 
-      {/* Notification */}
       {showNotification && (
         <View style={[styles.notification, { backgroundColor: accentColor }]}>
           <Text style={styles.notificationText}>{notificationMessage}</Text>
@@ -150,13 +160,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   appBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     elevation: 4,
   },
   appBarTitle: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     color: 'white',
+  },
+  logoutButton: {
+    padding: 8,
+  },
+  logoutButtonText: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 20,
   },
   scrollContent: {
     padding: 16,
@@ -196,14 +217,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
   },
-  imagePlaceholder: {
-    height: 120,
-    backgroundColor: '#e0e0e0',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderText: {
-    fontSize: 14,
+  image: {
+    width: '100%',
+    height: 180,
   },
   itemContent: {
     padding: 16,
@@ -242,15 +258,6 @@ const styles = StyleSheet.create({
   spacer: {
     flex: 1,
   },
-  viewButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  viewButtonText: {
-    fontSize: 14,
-  },
   notification: {
     position: 'absolute',
     bottom: 16,
@@ -265,4 +272,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
 export default ImageGalleryPage;
